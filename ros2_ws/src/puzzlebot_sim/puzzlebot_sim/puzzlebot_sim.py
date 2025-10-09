@@ -3,6 +3,7 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist, PoseStamped
 from std_msgs.msg import Float32
 import numpy as np
+from transforms3d.euler import euler2quat
 
 
 class KinematicModelNode(Node):
@@ -62,7 +63,11 @@ class KinematicModelNode(Node):
         pose_msg.header.stamp = self.get_clock().now().to_msg()
         pose_msg.header.frame_id = 'odom'
         # Set the pose
-        pose_msg.pose.orientation.w = 1.0  # identity quaternion
+        q_w, q_x, q_y, q_z = euler2quat(0.0, 0.0, self.theta)
+        pose_msg.pose.orientation.x = q_x
+        pose_msg.pose.orientation.y = q_y
+        pose_msg.pose.orientation.z = q_z
+        pose_msg.pose.orientation.w = q_w
         pose_msg.pose.position.x = self.x
         pose_msg.pose.position.y = self.y
         pose_msg.pose.position.z = 0.0
